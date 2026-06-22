@@ -302,18 +302,16 @@
 
 <div class="puzzle-card">
     
-    <!-- STAGE 1: PLAYER START SCREEN -->
     <div id="start-stage">
         <h1>AI ETHICS PUZZLE RACE</h1>
         <p class="instructions">Welcome to the Ethical City Grid! 🏙️ Face 10 critical security locks to test your human oversight against automated logic. Enter your squad nickname below, clear the system vulnerabilities, and race to the finish line!</p>
         
-        <input type="text" id="nickname-field" placeholder="Enter Nickname" maxlength="15" autocomplete="off">
+        <input type="text" id="nickname-field" placeholder="Enter Name/ Nickname" maxlength="15" autocomplete="off">
         <button id="start-btn" disabled>Waiting for Host Link Activation...</button>
         <div id="room-status-indicator" class="room-status error">⚠️ ACCESS GATE CLOSED BY HOST</div>
         <div id="start-error" class="feedback error"></div>
     </div>
 
-    <!-- STAGE 2: PLAYER ACTIVE PUZZLE SCREEN -->
     <div id="game-stage" class="hidden">
         <div class="puzzle-matrix-header">
             <span id="player-tag">🎯 ETHICAL PLANNER: GUEST</span>
@@ -336,30 +334,26 @@
         </div>
     </div>
 
-    <!-- STAGE 3: HOST CONTROL PANEL & AUDIENCE LEADERBOARD VIEW -->
     <div id="host-stage" class="hidden">
         <h1 style="color: #38bdf8;">🖥️ AUDIENCE LEADERBOARD</h1>
         <div class="room-status success" style="font-size: 1rem; margin-bottom: 20px; padding: 10px; background: #090d16; border-radius: 6px; border: 1px solid #10b981;">⚡ MATCH SESSION RUNNING LIVE</div>
         
         <div class="podium-container">
-            <!-- UPDATED FOR INTENSE COMPETITIVE PLANNER LEADERBOARD EXPERIENCE -->
             <div class="podium-title">⚔️ LIVE COMPETITIVE PLANNER LEADERBOARD</div>
             <div id="audience-leaderboard-list">
-                <div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for planners to finish the grid...</div>
+                <div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for squads to finish the grid...</div>
             </div>
         </div>
     </div>
 
-    <!-- STAGE 4: PLAYER VICTORY SCREEN -->
     <div id="victory-stage" class="hidden">
         <h1 style="color: var(--success-color);">🏁 MISSION COMPLETED</h1>
         <p class="instructions">Congratulations! You successfully unlocked all ethical vulnerabilities, bypassed the algorithmic black boxes, and successfully completed the challenge grid!</p>
         
         <div class="podium-container">
-            <div class="podium-title">🏆 FINAL PLANNER RUN TIMES</div>
+            <div class="podium-title">🏆 FINAL MATCH RUN TIMES</div>
             <div id="player-leaderboard-list">
-                <!-- Injected dynamically -->
-            </div>
+                </div>
         </div>
     </div>
 </div>
@@ -369,25 +363,24 @@
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqemRwcW9ydG9jY2hwaHdsd3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzI5MTcsImV4cCI6MjA5NzY0ODkxN30.ojXlizc3p7Gbq6F3ZqwzgI7DDy9GCtsr1pqbcAheXzg";
     const API_URL = `${BASE_URL}/rest/v1/leaderboard`;
 
-    // Seminar Presentation Activity Questions[cite: 1]
     const puzzles = [
-        { clue: "A city department celebrates saving thousands of dollars by using an automated system to map out new community clinics. However, when a neighborhood coalition asks to see the exact step-by-step logic behind how the final locations were chosen, they are handed a proprietary algorithm file that no human can interpret. What is the technical name for this opaque barrier?", answer: "BLACKBOX" },[cite: 1]
-        { clue: "If you feed a machine historical data regarding neighborhood investment patterns from the 1960s to train its learning model, the machine will perfectly replicate and automate the systemic inequalities of that era into its future housing predictions. What is the systemic phenomenon that the machine has inherited and amplified?", answer: "BIAS" },[cite: 1]
-        { clue: "In a modern smart city, an advanced system accurately detects crowd counts and optimizes traffic light timing by cross-referencing live mobile tracking and face-matching data. While structural efficiency reaches 100%, what fundamental individual right has been completely compromised as a hidden trade-off?", answer: "PRIVACY" },[cite: 1]
-        { clue: "Computational agility can easily generate mathematically perfect urban designs that look flawless on a screen but completely fail to align with the lived experiences and cultural aspirations of local populations. According to ethical AI planning principles, what framework ensures that human experts remain responsible for reviewing and controlling the final decision?", answer: "HUMAN IN THE LOOP" },[cite: 1]
-        { clue: "An automated transit routing system malfunctions and cuts off all public bus access to an underserved neighborhood, causing residents to lose jobs and services. The software developer blames the data provider, the data provider blames the planner, and the planner blames the machine. What core governance principle is missing?", answer: "ACCOUNTABILITY" },[cite: 1]
-        { clue: "A municipal council launches a digital participation platform to collect community feedback on a new urban project. However, many elderly, low-income, and marginalized residents are unable to participate because they lack internet access or digital skills. What is the name of this inequality?", answer: "DIGITAL DIVIDE" },[cite: 1]
-        { clue: "A private interest group opposes a proposed public transit project. Using advanced AI tools, they create emotionally charged false stories and fabricated evidence, then deliberately spread them across social media to manipulate public opinion. What is this intentional practice called?", answer: "DISINFORMATION" },[cite: 1]
-        { clue: "An AI planning model identifies an older low-rent neighborhood as the ideal location for environmental improvements and new investment. The project succeeds, but rising rents and property values eventually force long-term residents to leave. What urban process has occurred?", answer: "GENTRIFICATION" },[cite: 1]
-        { clue: "A planning organization periodically reviews AI recommendations to detect hidden discrimination, unfair treatment, and ethical violations before any decisions are implemented. What is the name of this evaluation process?", answer: "ETHICAL AUDIT" },[cite: 1]
-        { clue: "Urban planners openly explain how an AI model works, what data it uses, and why specific recommendations were generated, allowing residents to understand and challenge decisions when necessary. Which ethical principle is being demonstrated?", answer: "TRANSPARENCY" }[cite: 1]
+        { clue: "A city department celebrates saving thousands of dollars by using an automated system to map out new community clinics. However, when a neighborhood coalition asks to see the exact step-by-step logic behind how the final locations were chosen, they are handed a proprietary algorithm file that no human can interpret. What is the technical name for this opaque barrier?", answer: "BLACKBOX" },
+        { clue: "If you feed a machine historical data regarding neighborhood investment patterns from the 1960s to train its learning model, the machine will perfectly replicate and automate the systemic inequalities of that era into its future housing predictions. What is the systemic phenomenon that the machine has inherited and amplified?", answer: "BIAS" },
+        { clue: "In a modern smart city, an advanced system accurately detects crowd counts and optimizes traffic light timing by cross-referencing live mobile tracking and face-matching data. While structural efficiency reaches 100%, what fundamental individual right has been completely compromised as a hidden trade-off?", answer: "PRIVACY" },
+        { clue: "Computational agility can easily generate mathematically perfect urban designs that look flawless on a screen but completely fail to align with the lived experiences and cultural aspirations of local populations. According to ethical AI planning principles, what framework ensures that human experts remain responsible for reviewing and controlling the final decision?", answer: "HUMAN IN THE LOOP" },
+        { clue: "An automated transit routing system malfunctions and cuts off all public bus access to an underserved neighborhood, causing residents to lose jobs and services. The software developer blames the data provider, the data provider blames the planner, and the planner blames the machine. What core governance principle is missing?", answer: "ACCOUNTABILITY" },
+        { clue: "A municipal council launches a digital participation platform to collect community feedback on a new urban project. However, many elderly, low-income, and marginalized residents are unable to participate because they lack internet access or digital skills. What is the name of this inequality?", answer: "DIGITAL DIVIDE" },
+        { clue: "A private interest group opposes a proposed public transit project. Using advanced AI tools, they create emotionally charged false stories and fabricated evidence, then deliberately spread them across social media to manipulate public opinion. What is this intentional practice called?", answer: "DISINFORMATION" },
+        { clue: "An AI planning model identifies an older low-rent neighborhood as the ideal location for environmental improvements and new investment. The project succeeds, but rising rents and property values eventually force long-term residents to leave. What urban process has occurred?", answer: "GENTRIFICATION" },
+        { clue: "A planning organization periodically reviews AI recommendations to detect hidden discrimination, unfair treatment, and ethical violations before any decisions are implemented. What is the name of this evaluation process?", answer: "ETHICAL AUDIT" },
+        { clue: "Urban planners openly explain how an AI model works, what data it uses, and why specific recommendations were generated, allowing residents to understand and challenge decisions when necessary. Which ethical principle is being demonstrated?", answer: "TRANSPARENCY" }
     ];
 
     let answerBank = [
-        "BLACKBOX", "BIAS", "PRIVACY", "HUMAN IN THE LOOP",[cite: 1]
-        "ACCOUNTABILITY", "DIGITAL DIVIDE", "DISINFORMATION",[cite: 1]
-        "GENTRIFICATION", "ETHICAL AUDIT", "TRANSPARENCY",[cite: 1]
-        "EXPLAINABILITY", "PUBLIC ENGAGEMENT"[cite: 1]
+        "BLACKBOX", "BIAS", "PRIVACY", "HUMAN IN THE LOOP",
+        "ACCOUNTABILITY", "DIGITAL DIVIDE", "DISINFORMATION",
+        "GENTRIFICATION", "ETHICAL AUDIT", "TRANSPARENCY",
+        "EXPLAINABILITY", "PUBLIC ENGAGEMENT"
     ];
 
     let currentStep = 0;
@@ -559,7 +552,7 @@
             
             let htmlContent = "";
             if(data.length === 0) {
-                htmlContent = `<div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for planners to finish the grid...</div>`;
+                htmlContent = `<div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for squads to finish the grid...</div>`;
             }
 
             data.forEach((entry, index) => {
