@@ -390,7 +390,8 @@
         await writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
     });
 
-    if (window.location.hash === "#start" || localStorage.getItem('game_active_session') === 'true') {
+    // Removed the broken local memory loop hole
+    if (window.location.hash === "#start") {
         setTimeout(unlockRoomUI, 50);
     }
 
