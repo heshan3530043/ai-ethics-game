@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ethics Puzzle Terminal</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131a2c;
+            --accent-glow: #0ea5e9;
+            --accent-border: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --error-color: #f43f5e;
+            --success-color: #10b981;
+        }
+
+        body, input, button, div, p, h1, h2 {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.04) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.04) 2px, transparent 2px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .puzzle-card {
+            background-color: var(--card-bg);
+            padding: 30px 25px;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.2);
+            border: 2px solid var(--accent-border);
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .puzzle-matrix-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #090d16;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent-border);
+        }
+
+        .timer-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.3rem;
+            color: #fbbf24;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+        }
+
+        .player-tag {
+            font-size: 0.9rem;
+            color: var(--accent-border);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .progress-grid {
+            background-color: #090d16;
+            border-radius: 4px;
+            height: 12px;
+            width: 100%;
+            margin-bottom: 25px;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #0ea5e9, #34d399);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1 {
+            color: var(--accent-border);
+            font-size: 1.9rem;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+            cursor: pointer;
+        }
+
+        .instructions {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .puzzle-box {
+            background-color: #090d16;
+            padding: 22px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            border: 1px solid #1e293b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        .puzzle-box::before {
+            content: "[SECURITY SCREEN LOCK - COPYING LOCKED]";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--card-bg);
+            padding: 0 8px;
+            font-size: 0.72rem;
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #1e293b;
+            background-color: #090d16;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-border);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        .nickname-input {
+            margin-bottom: 25px;
+            text-transform: none !important;
+            letter-spacing: 0px !important;
+        }
+
+        .code-input {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-border);
+            color: #0b0f19;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: #7dd3fc;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        button:disabled {
+            background-color: #1e293b !important;
+            color: #475569 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            border: 1px solid #334155;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            min-height: 24px;
+        }
+
+        .error { color: var(--error-color); }
+        .success { color: var(--success-color); }
+        .hidden { display: none; }
+
+        .podium-container {
+            margin-top: 20px;
+            background: #090d16;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--accent-border);
+            text-align: left;
+        }
+
+        .podium-title {
+            font-size: 1rem;
+            color: var(--accent-border);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #1e293b;
+            padding-bottom: 5px;
+        }
+
+        .podium-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .rank-1 { background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;}
+        .rank-2 { background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;}
+        .rank-3 { background-color: rgba(180, 83, 9, 0.15); color: #f97316; border: 1px solid #b45309;}
+        .rank-other { background-color: #111827; color: var(--text-muted); font-size: 0.85rem;}
+
+        .room-status {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div class="puzzle-card">
+    
+    <!-- STAGE 1: START SCREEN -->
+    <div id="start-stage">
+        <h1 id="main-title">AI ETHICS PUZZLE RACE</h1>
+        <p class="instructions">Welcome to the Ethical City Grid! 🏙️ Face 10 critical security locks to test your human oversight against automated logic. Enter your squad nickname below, clear the system vulnerabilities, and race to the finish line!</p>
+        
+        <input type="text" id="nickname-field" class="nickname-input" placeholder="Enter Nickname / Team Name..." maxlength="15" autocomplete="off">
+        <button id="start-btn" disabled>Waiting for Host to Start...</button>
+        <div id="room-status-indicator" class="room-status error">⚠️ SYSTEM LOCKED BY HOST</div>
+        <div id="start-error" class="feedback error"></div>
+    </div>
+
+    <!-- STAGE 2: ACTIVE PUZZLE SCREEN -->
+    <div id="game-stage" class="hidden">
+        <div class="puzzle-matrix-header">
+            <span id="player-tag" class="player-tag">OPERATOR: GUEST</span>
+            <span id="timer" class="timer-display">00:00.0</span>
+        </div>
+        
+        <div class="progress-grid">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        
+        <div id="clue-text" class="puzzle-box">Fetching cryptographic city criteria...</div>
+        
+        <input type="text" id="answer-input" class="code-input" placeholder="ENTER COGNITIVE KEY..." autocomplete="off">
+        <button id="submit-btn">Verify Concept Key</button>
+        <div id="feedback-msg" class="feedback"></div>
+    </div>
+
+    <!-- STAGE 3: VICTORY SCREEN WITH REAL-TIME PODIUM -->
+    <div id="victory-stage" class="hidden">
+        <h1 style="color: var(--success-color);">🏁 SYSTEM RESOLVED</h1>
+        <p class="instructions">Flawless victory! You successfully outsmarted the black box, solved the algorithmic traps, and saved the city infrastructure!</p>
+        
+        <div class="podium-container">
+            <div class="podium-title">📊 CLASSROOM RUN TIMES & LEADERBOARD</div>
+            <div id="leaderboard-list">
+                <!-- Records injected dynamically -->
+            </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 20px;">Do not refresh. Present this terminal leaderboard log to your instructor.</p>
+    </div>
+</div>
+
+<script>
+    // Configured and bound directly to your clean re-created project elements
+    const BASE_URL = "https://ljzdpqortocchphwlwwr.supabase.co"; 
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqemRwcW9ydG9jY2hwaHdsd3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzI5MTcsImV4cCI6MjA5NzY0ODkxN30.ojXlizc3p7Gbq6F3ZqwzgI7DDy9GCtsr1pqbcAheXzg";
+    
+    const API_URL = `${BASE_URL}/rest/v1/leaderboard`;
+
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+
+    const puzzles = [
+        { clue: "A city department celebrates saving thousands of dollars by using an automated system to map out new community clinics. However, when a neighborhood coalition asks to see the exact step-by-step logic behind how the final locations were chosen, they are handed a proprietary algorithm file that no human can interpret. What is the technical name for this opaque barrier?", answer: "BLACKBOX" },
+        { clue: "If you feed a machine historical data regarding neighborhood investment patterns from the 1960s to train its learning model, the machine will perfectly replicate and automate the systemic inequalities of that era into its future housing predictions. What is the systemic phenomenon that the machine has inherited and amplified?", answer: "BIAS" },
+        { clue: "In a modern smart city, an advanced system accurately detects crowd counts and optimizes traffic light timing by cross-referencing live mobile tracking and face-matching data. While structural efficiency reaches 100%, what fundamental individual right has been completely compromised as a hidden trade-off?", answer: "PRIVACY" },
+        { clue: "Computational agility can easily generate mathematically perfect urban designs that look flawless on a screen but completely fail to align with the lived experiences and cultural aspirations of local human populations. To prevent this, what specific framework must be enforced to keep human experts in control of the final output? (4 Words)", answer: "HUMAN IN THE LOOP" },
+        { clue: "An automated transit routing system malfunctions and cuts off all public bus access to an underserved neighborhood, causing residents to lose their jobs. The software developer blames the data provider, the data provider blames the planner who ran the program, and the planner blames the machine's autonomous nature. What core administrative necessity is missing here?", answer: "ACCOUNTABILITY" },
+        { clue: "A municipal council prides itself on using a brand-new digital feedback application to let residents vote on neighborhood park budgets. However, the system inadvertently filters out the voices of elderly, low-income, and marginalized populations who lack access to smart devices or internet infrastructure. What is the name of this societal gap?", answer: "DIGITAL DIVIDE" },
+        { clue: "A private interest group wants to stop a newly proposed public transit line because it passes near their high-value properties. They use generative machine learning tools to fabricate panic-inducing, emotionally charged false narratives and distribute them rapidly across social media to destroy public trust. What is this intentional act called?", answer: "DISINFORMATION" },
+        { clue: "An urban algorithm identifies an older, lower-rent district as the absolute perfect geographic node for green infrastructure reinvestment. The resulting eco-friendly upgrades look beautiful, but they instantly trigger skyrocketing land values and rents, ultimately forcing out the original community. What urban process occurred here?", answer: "GENTRIFICATION" },
+        { clue: "Modern planning methods use live sensor networks, the Internet of Things, and cloud computing to maintain a constantly updating, identical virtual mirror of a real city's physical infrastructure to run automated simulations. What is the technical term for this virtual mirror?", answer: "DIGITAL TWIN" },
+        { clue: "While automated planning methodologies lack empathy, morals, or an inherent understanding of social justice, practicing planners are bound by a strict professional framework that mandates they must always serve the public interest with absolute integrity. What is the acronym of the organization that enforces this code?", answer: "AICP" }
+    ];
+
+    let currentStep = 0;
+    let startTime;
+    let timerInterval;
+    let playerNickname = "GUEST";
+    let isRoomUnlocked = false;
+
+    const startStage = document.getElementById('start-stage');
+    const gameStage = document.getElementById('game-stage');
+    const victoryStage = document.getElementById('victory-stage');
+    const startBtn = document.getElementById('start-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const nicknameField = document.getElementById('nickname-field');
+    const startError = document.getElementById('start-error');
+    const clueText = document.getElementById('clue-text');
+    const answerInput = document.getElementById('answer-input');
+    const feedbackMsg = document.getElementById('feedback-msg');
+    const playerTag = document.getElementById('player-tag');
+    const progressFill = document.getElementById('progress-fill');
+    const timerDisplay = document.getElementById('timer');
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const roomStatusIndicator = document.getElementById('room-status-indicator');
+    const mainTitle = document.getElementById('main-title');
+
+    function updateTimer() {
+        const currentTime = new Date();
+        const timePassed = new Date(currentTime - startTime);
+        const mins = String(timePassed.getUTCMinutes()).padStart(2, '0');
+        const secs = String(timePassed.getUTCSeconds()).padStart(2, '0');
+        const ms = String(Math.floor(timePassed.getUTCMilliseconds() / 100));
+        timerDisplay.textContent = `${mins}:${secs}.${ms}`;
+    }
+
+    function unlockRoomUI() {
+        isRoomUnlocked = true;
+        localStorage.setItem('game_active_session', 'true');
+        roomStatusIndicator.className = "room-status success";
+        roomStatusIndicator.textContent = "⚡ SYSTEM LIVE: READY TO RACE";
+        startBtn.disabled = false;
+        startBtn.textContent = "START GAME & START TIMER";
+    }
+
+    async function writeToCloud(nameValue, timeValue) {
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'apikey': API_KEY,
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ name: nameValue, time: timeValue })
+            });
+        } catch(e){}
+    }
+
+    mainTitle.addEventListener('click', async () => {
+        unlockRoomUI();
+        await writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
+    });
+
+    if (window.location.hash === "#start" || localStorage.getItem('game_active_session') === 'true') {
+        setTimeout(unlockRoomUI, 50);
+    }
+
+    setInterval(async () => {
+        if (!isRoomUnlocked) {
+            try {
+                const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+                });
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    unlockRoomUI();
+                }
+            } catch(e){}
+        }
+        if (currentStep >= puzzles.length) {
+            renderLeaderboard();
+        }
+    }, 1500);
+
+    startBtn.addEventListener('click', () => {
+        const enteredName = nicknameField.value.trim();
+        if (enteredName === "") {
+            startError.textContent = "⚠ Name field empty. Identify operator credentials.";
+            return;
+        }
+        playerNickname = enteredName;
+        playerTag.textContent = `OPERATOR: ${playerNickname.toUpperCase()}`;
+        startStage.classList.add('hidden');
+        gameStage.classList.remove('hidden');
+        startTime = new Date();
+        timerInterval = setInterval(updateTimer, 100);
+        loadPuzzle();
+    });
+
+    function loadPuzzle() {
+        if (currentStep >= puzzles.length) {
+            clearInterval(timerInterval);
+            gameStage.classList.add('hidden');
+            victoryStage.classList.remove('hidden');
+            saveScore(playerNickname, timerDisplay.textContent);
+            return;
+        }
+        clueText.textContent = puzzles[currentStep].clue;
+        answerInput.value = "";
+        feedbackMsg.textContent = "";
+        progressFill.style.width = `${(currentStep / puzzles.length) * 100}%`;
+        answerInput.focus();
+    }
+
+    async function saveScore(name, finalTime) {
+        await writeToCloud(name.toUpperCase(), finalTime);
+        renderLeaderboard();
+    }
+
+    async function renderLeaderboard() {
+        try {
+            const response = await fetch(`${API_URL}?name=neq.ROOM_CONFIG_STATUS&select=name,time`, {
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+            });
+            const data = await response.json();
+            if (!data || data.error) return;
+
+            data.sort((a, b) => a.time.localeCompare(b.time));
+            leaderboardList.innerHTML = "";
+            
+            data.forEach((entry, index) => {
+                let row = document.createElement('div');
+                let positionSymbol = "";
+                let rankClass = "rank-other";
+
+                if (index === 0) { positionSymbol = "🥇 1ST PLACE: "; rankClass = "rank-1"; }
+                else if (index === 1) { positionSymbol = "🥈 2ND PLACE: "; rankClass = "rank-2"; }
+                else if (index === 2) { positionSymbol = "🥉 3RD PLACE: "; rankClass = "rank-3"; }
+                else { positionSymbol = `⚡ RANK ${index + 1}: `; }
+
+                row.className = `podium-row ${rankClass}`;
+                row.innerHTML = `<span>${positionSymbol}${entry.name}</span> <span>${entry.time}</span>`;
+                leaderboardList.appendChild(row);
+            });
+        } catch(e){}
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerInput.value.trim().toUpperCase();
+        const correctAnswer = puzzles[currentStep].answer.toUpperCase();
+
+        if (userAnswer === correctAnswer) {
+            feedbackMsg.className = "feedback success";
+            feedbackMsg.textContent = "✔ CORRECT! Lock decrypted. Loading next zone...";
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                currentStep++;
+                submitBtn.disabled = false;
+                loadPuzzle();
+            }, 900);
+        } else {
+            feedbackMsg.className = "feedback error";
+            feedbackMsg.textContent = "❌ WRONG ANSWER! The lock remains sealed. Try a different concept!";
+        }
+    }
+
+    submitBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
+</script>
+
+</body>
+</html>
