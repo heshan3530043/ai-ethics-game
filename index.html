@@ -185,9 +185,45 @@
             min-height: 24px;
         }
 
-        .error { color: var(--error-color); }
-        .success { color: var(--success-color); }
-        .hidden { display: none; }
+        /* ANSWER BANK STYLES */
+        .bank-container {
+            margin-top: 25px;
+            background-color: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .bank-title {
+            font-size: 0.8rem;
+            color: var(--accent-border);
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 5px;
+        }
+
+        .bank-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .bank-chip {
+            background-color: #131a2c;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
 
         .podium-container {
             margin-top: 20px;
@@ -224,11 +260,10 @@
         .rank-3 { background-color: rgba(180, 83, 9, 0.18); color: #f97316; border: 1px solid #b45309;}
         .rank-other { background-color: #0b0f19; color: #94a3b8; border: 1px solid #1e293b;}
 
-        .room-status {
-            font-size: 0.85rem;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+        .room-status { font-size: 0.85rem; margin-top: 10px; font-weight: bold; }
+        .error { color: var(--error-color); }
+        .success { color: var(--success-color); }
+        .hidden { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -262,6 +297,12 @@
         <input type="text" id="answer-input" class="code-input" placeholder="ENTER COGNITIVE KEY..." autocomplete="off">
         <button id="submit-btn">Verify Concept Key</button>
         <div id="feedback-msg" class="feedback"></div>
+
+        <!-- LIVE RANDOM REMOVABLE ANSWER BANK -->
+        <div class="bank-container">
+            <div class="bank-title">🔑 Available System Verification Decryption Keys:</div>
+            <div id="answer-bank-grid" class="bank-grid"></div>
+        </div>
     </div>
 
     <!-- STAGE 3: HOST CONTROL PANEL & AUDIENCE LEADERBOARD VIEW -->
@@ -296,18 +337,27 @@
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqemRwcW9ydG9jY2hwaHdsd3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzI5MTcsImV4cCI6MjA5NzY0ODkxN30.ojXlizc3p7Gbq6F3ZqwzgI7DDy9GCtsr1pqbcAheXzg";
     const API_URL = `${BASE_URL}/rest/v1/leaderboard`;
 
+    // Updated Seminar Presentation Activity Questions
     const puzzles = [
-        { clue: "A city department celebrates saving thousands of dollars by using an automated system to map out new community clinics. However, when a neighborhood coalition asks to see the exact step-by-step logic behind how the final locations were chosen, they are handed a proprietary algorithm file that no human can interpret. What is the technical name for this opaque barrier?", answer: "BLACKBOX" },
-        { clue: "If you feed a machine historical data regarding neighborhood investment patterns from the 1960s to train its learning model, the machine will perfectly replicate and automate the systemic inequalities of that era into its future housing predictions. What is the systemic phenomenon that the machine has inherited and amplified?", answer: "BIAS" },
-        { clue: "In a modern smart city, an advanced system accurately detects crowd counts and optimizes traffic light timing by cross-referencing live mobile tracking and face-matching data. While structural efficiency reaches 100%, what fundamental individual right has been completely compromised as a hidden trade-off?", answer: "PRIVACY" },
-        { clue: "Computational agility can easily generate mathematically perfect urban designs that look flawless on a screen but completely fail to align with the lived experiences and cultural aspirations of local human populations. To prevent this, what specific framework must be enforced to keep human experts in control of the final output? (4 Words)", answer: "HUMAN IN THE LOOP" },
-        { clue: "An automated transit routing system malfunctions and cuts off all public bus access to an underserved neighborhood, causing residents to lose their jobs. The software developer blames the data provider, the data provider blames the planner who ran the program, and the planner blames the machine's autonomous nature. What core administrative necessity is missing here?", answer: "ACCOUNTABILITY" },
-        { clue: "A municipal council prides itself on using a brand-new digital feedback application to let residents vote on neighborhood park budgets. However, the system inadvertently filters out the voices of elderly, low-income, and marginalized populations who lack access to smart devices or internet infrastructure. What is the name of this societal gap?", answer: "DIGITAL DIVIDE" },
-        { clue: "A private interest group wants to stop a newly proposed public transit line because it passes near their high-value properties. They use generative machine learning tools to fabricate panic-inducing, emotionally charged false narratives and distribute them rapidly across social media to destroy public trust. What is this intentional act called?", answer: "DISINFORMATION" },
-        { clue: "An urban algorithm identifies an older, lower-rent district as the absolute perfect geographic node for green infrastructure reinvestment. The resulting eco-friendly upgrades look beautiful, but they instantly trigger skyrocketing land values and rents, ultimately forcing out the original community. What urban process occurred here?", answer: "GENTRIFICATION" },
-        { clue: "Modern planning methods use live sensor networks, the Internet of Things, and cloud computing to maintain a constantly updating, identical virtual mirror of a real city's physical infrastructure to run automated simulations. What is the technical term for this virtual mirror?", answer: "DIGITAL TWIN" },
-        { clue: "While automated planning methodologies lack empathy, morals, or an inherent understanding of social justice, practicing planners are bound by a strict professional framework that mandates they must always serve the public interest with absolute integrity. What is the acronym of the organization that enforces this code?", answer: "AICP" }
+        { clue: "A city department celebrates saving thousands of dollars by using an automated system to map out new community clinics. However, when a neighborhood coalition asks to see the exact step-by-step logic behind how the final locations were chosen, they are handed a proprietary algorithm file that no human can interpret. What is the technical name for this opaque barrier?", answer: "BLACKBOX" }, //[cite: 1]
+        { clue: "If you feed a machine historical data regarding neighborhood investment patterns from the 1960s to train its learning model, the machine will perfectly replicate and automate the systemic inequalities of that era into its future housing predictions. What is the systemic phenomenon that the machine has inherited and amplified?", answer: "BIAS" }, //[cite: 1]
+        { clue: "In a modern smart city, an advanced system accurately detects crowd counts and optimizes traffic light timing by cross-referencing live mobile tracking and face-matching data. While structural efficiency reaches 100%, what fundamental individual right has been completely compromised as a hidden trade-off?", answer: "PRIVACY" }, //[cite: 1]
+        { clue: "Computational agility can easily generate mathematically perfect urban designs that look flawless on a screen but completely fail to align with the lived experiences and cultural aspirations of local populations. According to ethical AI planning principles, what framework ensures that human experts remain responsible for reviewing and controlling the final decision? (4 Words)", answer: "HUMAN IN THE LOOP" }, //[cite: 1]
+        { clue: "An automated transit routing system malfunctions and cuts off all public bus access to an underserved neighborhood, causing residents to lose jobs and services. The software developer blames the data provider, the data provider blames the planner, and the planner blames the machine. What core governance principle is missing?", answer: "ACCOUNTABILITY" }, //[cite: 1]
+        { clue: "A municipal council launches a digital participation platform to collect community feedback on a new urban project. However, many elderly, low-income, and marginalized residents are unable to participate because they lack internet access or digital skills. What is the name of this inequality?", answer: "DIGITAL DIVIDE" }, //[cite: 1]
+        { clue: "A private interest group opposes a proposed public transit project. Using advanced AI tools, they create emotionally charged false stories and fabricated evidence, then deliberately spread them across social media to manipulate public opinion. What is this intentional practice called?", answer: "DISINFORMATION" }, //[cite: 1]
+        { clue: "An AI planning model identifies an older low-rent neighborhood as the ideal location for environmental improvements and new investment. The project succeeds, but rising rents and property values eventually force long-term residents to leave. What urban process has occurred?", answer: "GENTRIFICATION" }, //[cite: 1]
+        { clue: "A planning organization periodically reviews AI recommendations to detect hidden discrimination, unfair treatment, and ethical violations before any decisions are implemented. What is the name of this evaluation process?", answer: "ETHICAL AUDIT" }, //[cite: 1]
+        { clue: "Urban planners openly explain how an AI model works, what data it uses, and why specific recommendations were generated, allowing residents to understand and challenge decisions when necessary. Which ethical principle is being demonstrated?", answer: "TRANSPARENCY" } //[cite: 1]
     ];
+
+    // Master 12 key structure containing the fake keys[cite: 1]
+    let answerBank = [
+        "BLACKBOX", "BIAS", "PRIVACY", "HUMAN IN THE LOOP", 
+        "ACCOUNTABILITY", "DIGITAL DIVIDE", "DISINFORMATION", 
+        "GENTRIFICATION", "ETHICAL AUDIT", "TRANSPARENCY", 
+        "EXPLAINABILITY", "PUBLIC ENGAGEMENT"
+    ]; //[cite: 1]
 
     let currentStep = 0;
     let startTime;
@@ -331,6 +381,28 @@
     const progressFill = document.getElementById('progress-fill');
     const timerDisplay = document.getElementById('timer');
     const roomStatusIndicator = document.getElementById('room-status-indicator');
+    const bankGrid = document.getElementById('answer-bank-grid');
+
+    // Shuffle Array Utility to represent choices randomly
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Render configuration for the random answers bar
+    function renderAnswerBank() {
+        bankGrid.innerHTML = "";
+        answerBank.forEach(ans => {
+            let chip = document.createElement('span');
+            chip.className = "bank-chip";
+            chip.textContent = ans;
+            chip.id = `chip-${ans.replace(/\s+/g, '_')}`;
+            bankGrid.appendChild(chip);
+        });
+    }
 
     function updateTimer() {
         const currentTime = new Date();
@@ -365,7 +437,6 @@
         } catch(e){}
     }
 
-    // IDENTITY INITIALIZATION
     if (window.location.hash === "#start") {
         isHostSession = true;
         startStage.classList.add('hidden');
@@ -381,9 +452,7 @@
         }
     });
 
-    // CLOUD REFRESH LOOP
     setInterval(async () => {
-        // Only players monitor lock status
         if (!isHostSession) {
             try {
                 const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
@@ -408,7 +477,6 @@
             } catch(e){}
         }
 
-        // Only pull leaderboard if Host Dashboard is active or Player reaches Victory screen
         if (isHostSession || currentStep >= puzzles.length) {
             renderLeaderboardData();
         }
@@ -424,6 +492,11 @@
         playerTag.textContent = `OPERATOR: ${playerNickname.toUpperCase()}`;
         startStage.classList.add('hidden');
         gameStage.classList.remove('hidden');
+        
+        // Randomize list arrangement upon initialization
+        shuffle(answerBank);
+        renderAnswerBank();
+        
         startTime = new Date();
         timerInterval = setInterval(updateTimer, 100);
         loadPuzzle();
@@ -457,7 +530,6 @@
             const data = await response.json();
             if (!data || data.error) return;
 
-            // Auto-calculate sorting placement rank by fastest completion time string
             data.sort((a, b) => a.time.localeCompare(b.time));
             
             let htmlContent = "";
@@ -497,9 +569,14 @@
             feedbackMsg.className = "feedback success";
             feedbackMsg.textContent = "✔ CORRECT!";
             submitBtn.disabled = true;
+
+            // Remove answer instantly from the bar array and update the interface view
+            answerBank = answerBank.filter(val => val !== correctAnswer);
+
             setTimeout(() => {
                 currentStep++;
                 submitBtn.disabled = false;
+                renderAnswerBank(); // Re-renders the bar with the used answer gone
                 loadPuzzle();
             }, 800);
         } else {
