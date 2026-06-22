@@ -301,7 +301,6 @@
 </div>
 
 <script>
-    // Configured and bound directly to your clean re-created project elements
     const BASE_URL = "https://ljzdpqortocchphwlwwr.supabase.co"; 
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqemRwcW9ydG9jY2hwaHdsd3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzI5MTcsImV4cCI6MjA5NzY0ODkxN30.ojXlizc3p7Gbq6F3ZqwzgI7DDy9GCtsr1pqbcAheXzg";
     
@@ -334,6 +333,7 @@
     let timerInterval;
     let playerNickname = "GUEST";
     let isRoomUnlocked = false;
+    let isHostSession = false;
 
     const startStage = document.getElementById('start-stage');
     const gameStage = document.getElementById('game-stage');
@@ -363,11 +363,18 @@
 
     function unlockRoomUI() {
         isRoomUnlocked = true;
-        localStorage.setItem('game_active_session', 'true');
         roomStatusIndicator.className = "room-status success";
         roomStatusIndicator.textContent = "⚡ SYSTEM LIVE: READY TO RACE";
         startBtn.disabled = false;
         startBtn.textContent = "START GAME & START TIMER";
+    }
+
+    function lockRoomUI() {
+        isRoomUnlocked = false;
+        roomStatusIndicator.className = "room-status error";
+        roomStatusIndicator.textContent = "⚠️ SYSTEM LOCKED BY HOST";
+        startBtn.disabled = true;
+        startBtn.textContent = "Waiting for Host to Start...";
     }
 
     async function writeToCloud(nameValue, timeValue) {
@@ -385,28 +392,52 @@
         } catch(e){}
     }
 
+    async function removeFromCloud() {
+        try {
+            await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': API_KEY,
+                    'Authorization': `Bearer ${API_KEY}`
+                }
+            });
+        } catch(e){}
+    }
+
     mainTitle.addEventListener('click', async () => {
+        isHostSession = true;
         unlockRoomUI();
         await writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
     });
 
-    // Removed the broken local memory loop hole
     if (window.location.hash === "#start") {
         setTimeout(unlockRoomUI, 50);
+        isHostSession = true;
+        writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
     }
 
-    setInterval(async () => {
-        if (!isRoomUnlocked) {
-            try {
-                const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
-                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
-                });
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    unlockRoomUI();
-                }
-            } catch(e){}
+    // Automatically lock the room when the host closes the tab or navigates away
+    window.addEventListener('beforeunload', () => {
+        if (isHostSession) {
+            navigator.sendBeacon(`${API_URL}?name=eq.ROOM_CONFIG_STATUS`, null);
+            // Backup direct sync removal request
+            removeFromCloud();
         }
+    });
+
+    setInterval(async () => {
+        try {
+            const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
+                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+            });
+            const data = await response.json();
+            if (data && data.length > 0) {
+                if (!isRoomUnlocked) unlockRoomUI();
+            } else {
+                if (isRoomUnlocked && !isHostSession) lockRoomUI();
+            }
+        } catch(e){}
+
         if (currentStep >= puzzles.length) {
             renderLeaderboard();
         }
