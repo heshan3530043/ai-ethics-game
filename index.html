@@ -48,7 +48,7 @@
             box-shadow: 0 0 30px rgba(14, 165, 233, 0.2);
             border: 2px solid var(--accent-border);
             width: 100%;
-            max-width: 520px;
+            max-width: 580px;
             text-align: center;
             box-sizing: border-box;
         }
@@ -126,18 +126,6 @@
             position: relative;
         }
 
-        .puzzle-box::before {
-            content: "[SECURITY SCREEN LOCK - COPYING LOCKED]";
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background: var(--card-bg);
-            padding: 0 8px;
-            font-size: 0.72rem;
-            color: var(--error-color);
-            font-weight: bold;
-        }
-
         input[type="text"] {
             width: 100%;
             padding: 15px;
@@ -159,15 +147,12 @@
 
         .nickname-input {
             margin-bottom: 25px;
-            text-transform: none !important;
-            letter-spacing: 0px !important;
         }
 
         .code-input {
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 20px;
-            -webkit-user-select: text !important;
             user-select: text !important;
         }
 
@@ -213,39 +198,42 @@
         .podium-container {
             margin-top: 20px;
             background: #090d16;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
-            border: 1px solid var(--accent-border);
+            border: 2px solid var(--accent-border);
             text-align: left;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
         }
 
         .podium-title {
-            font-size: 1rem;
-            color: var(--accent-border);
+            font-size: 1.2rem;
+            color: #38bdf8;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 12px;
-            border-bottom: 1px dashed #1e293b;
-            padding-bottom: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px dashed #1e293b;
+            padding-bottom: 10px;
+            letter-spacing: 1px;
         }
 
         .podium-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 10px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            font-size: 0.95rem;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 1.05rem;
             font-weight: bold;
+            align-items: center;
         }
 
-        .rank-1 { background-color: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24;}
-        .rank-2 { background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid #94a3b8;}
-        .rank-3 { background-color: rgba(180, 83, 9, 0.15); color: #f97316; border: 1px solid #b45309;}
-        .rank-other { background-color: #111827; color: var(--text-muted); font-size: 0.85rem;}
+        .rank-1 { background-color: rgba(251, 191, 36, 0.18); color: #fbbf24; border: 1px solid #fbbf24; font-size: 1.2rem;}
+        .rank-2 { background-color: rgba(148, 163, 184, 0.18); color: #cbd5e1; border: 1px solid #94a3b8; font-size: 1.1rem;}
+        .rank-3 { background-color: rgba(180, 83, 9, 0.18); color: #f97316; border: 1px solid #b45309; font-size: 1.05rem;}
+        .rank-other { background-color: #0b0f19; color: #94a3b8; border: 1px solid #1e293b; font-size: 0.95rem;}
 
         .room-status {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             margin-top: 10px;
             font-weight: bold;
             letter-spacing: 1px;
@@ -256,7 +244,6 @@
 
 <div class="puzzle-card">
     
-    <!-- STAGE 1: START SCREEN -->
     <div id="start-stage">
         <h1 id="main-title">AI ETHICS PUZZLE RACE</h1>
         <p class="instructions">Welcome to the Ethical City Grid! 🏙️ Face 10 critical security locks to test your human oversight against automated logic. Enter your squad nickname below, clear the system vulnerabilities, and race to the finish line!</p>
@@ -267,7 +254,6 @@
         <div id="start-error" class="feedback error"></div>
     </div>
 
-    <!-- STAGE 2: ACTIVE PUZZLE SCREEN -->
     <div id="game-stage" class="hidden">
         <div class="puzzle-matrix-header">
             <span id="player-tag" class="player-tag">OPERATOR: GUEST</span>
@@ -285,16 +271,27 @@
         <div id="feedback-msg" class="feedback"></div>
     </div>
 
-    <!-- STAGE 3: VICTORY SCREEN WITH REAL-TIME PODIUM -->
+    <div id="host-stage" class="hidden">
+        <h1 style="color: #38bdf8;">🖥️ CONTROL TERMINAL</h1>
+        <div id="host-status-bar" class="room-status success" style="font-size: 1rem; margin-bottom: 20px; padding: 10px; background: #090d16; border-radius: 6px; border: 1px solid #10b981;">⚡ ROOM STATE: LIVE RUNNING</div>
+        
+        <div class="podium-container">
+            <div class="podium-title">📊 CLASSROOM RANKINGS (REAL-TIME)</div>
+            <div id="audience-leaderboard-list">
+                <div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for squads to decrypt system locks...</div>
+            </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 20px;">Project this screen to the main hall. Closing this browser window will automatically freeze and lock the match session.</p>
+    </div>
+
     <div id="victory-stage" class="hidden">
         <h1 style="color: var(--success-color);">🏁 SYSTEM RESOLVED</h1>
         <p class="instructions">Flawless victory! You successfully outsmarted the black box, solved the algorithmic traps, and saved the city infrastructure!</p>
         
         <div class="podium-container">
-            <div class="podium-title">📊 CLASSROOM RUN TIMES & LEADERBOARD</div>
-            <div id="leaderboard-list">
-                <!-- Records injected dynamically -->
-            </div>
+            <div class="podium-title">🏅 COMPETITION RUN TIMES</div>
+            <div id="player-leaderboard-list">
+                </div>
         </div>
         <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 20px;">Do not refresh. Present this terminal leaderboard log to your instructor.</p>
     </div>
@@ -337,6 +334,7 @@
 
     const startStage = document.getElementById('start-stage');
     const gameStage = document.getElementById('game-stage');
+    const hostStage = document.getElementById('host-stage');
     const victoryStage = document.getElementById('victory-stage');
     const startBtn = document.getElementById('start-btn');
     const submitBtn = document.getElementById('submit-btn');
@@ -348,18 +346,8 @@
     const playerTag = document.getElementById('player-tag');
     const progressFill = document.getElementById('progress-fill');
     const timerDisplay = document.getElementById('timer');
-    const leaderboardList = document.getElementById('leaderboard-list');
     const roomStatusIndicator = document.getElementById('room-status-indicator');
     const mainTitle = document.getElementById('main-title');
-
-    function updateTimer() {
-        const currentTime = new Date();
-        const timePassed = new Date(currentTime - startTime);
-        const mins = String(timePassed.getUTCMinutes()).padStart(2, '0');
-        const secs = String(timePassed.getUTCSeconds()).padStart(2, '0');
-        const ms = String(Math.floor(timePassed.getUTCMilliseconds() / 100));
-        timerDisplay.textContent = `${mins}:${secs}.${ms}`;
-    }
 
     function unlockRoomUI() {
         isRoomUnlocked = true;
@@ -404,42 +392,41 @@
         } catch(e){}
     }
 
-    mainTitle.addEventListener('click', async () => {
-        isHostSession = true;
-        unlockRoomUI();
-        await writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
-    });
-
+    // Checking if this exact screen is the Host Panel Configuration
     if (window.location.hash === "#start") {
-        setTimeout(unlockRoomUI, 50);
         isHostSession = true;
+        startStage.classList.add('hidden');
+        gameStage.classList.add('hidden');
+        hostStage.classList.remove('hidden');
         writeToCloud("ROOM_CONFIG_STATUS", "ACTIVE");
     }
 
-    // Automatically lock the room when the host closes the tab or navigates away
     window.addEventListener('beforeunload', () => {
         if (isHostSession) {
             navigator.sendBeacon(`${API_URL}?name=eq.ROOM_CONFIG_STATUS`, null);
-            // Backup direct sync removal request
             removeFromCloud();
         }
     });
 
+    // Central Auto-Calculating Sync Loop
     setInterval(async () => {
-        try {
-            const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
-                headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
-            });
-            const data = await response.json();
-            if (data && data.length > 0) {
-                if (!isRoomUnlocked) unlockRoomUI();
-            } else {
-                if (isRoomUnlocked && !isHostSession) lockRoomUI();
-            }
-        } catch(e){}
+        if (!isHostSession) {
+            try {
+                const response = await fetch(`${API_URL}?name=eq.ROOM_CONFIG_STATUS&select=name`, {
+                    headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+                });
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    if (!isRoomUnlocked) unlockRoomUI();
+                } else {
+                    if (isRoomUnlocked) lockRoomUI();
+                }
+            } catch(e){}
+        }
 
-        if (currentStep >= puzzles.length) {
-            renderLeaderboard();
+        // Auto-fetch and calculate ranks if viewing the Host Screen or Victory Screen
+        if (isHostSession || currentStep >= puzzles.length) {
+            renderLeaderboardData();
         }
     }, 1500);
 
@@ -475,10 +462,10 @@
 
     async function saveScore(name, finalTime) {
         await writeToCloud(name.toUpperCase(), finalTime);
-        renderLeaderboard();
+        renderLeaderboardData();
     }
 
-    async function renderLeaderboard() {
+    async function renderLeaderboardData() {
         try {
             const response = await fetch(`${API_URL}?name=neq.ROOM_CONFIG_STATUS&select=name,time`, {
                 headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
@@ -486,23 +473,36 @@
             const data = await response.json();
             if (!data || data.error) return;
 
+            // Sort logic calculates performance rank instantly based on lowest completion time
             data.sort((a, b) => a.time.localeCompare(b.time));
-            leaderboardList.innerHTML = "";
             
+            let htmlContent = "";
+            if(data.length === 0) {
+                htmlContent = `<div style="color: var(--text-muted); text-align: center; padding: 10px;">Waiting for squads to decrypt system locks...</div>`;
+            }
+
             data.forEach((entry, index) => {
-                let row = document.createElement('div');
-                let positionSymbol = "";
+                let positionText = "";
                 let rankClass = "rank-other";
 
-                if (index === 0) { positionSymbol = "🥇 1ST PLACE: "; rankClass = "rank-1"; }
-                else if (index === 1) { positionSymbol = "🥈 2ND PLACE: "; rankClass = "rank-2"; }
-                else if (index === 2) { positionSymbol = "🥉 3RD PLACE: "; rankClass = "rank-3"; }
-                else { positionSymbol = `⚡ RANK ${index + 1}: `; }
+                if (index === 0) { positionText = "🥇 1ST PLACE"; rankClass = "rank-1"; }
+                else if (index === 1) { positionText = "🥈 2ND PLACE"; rankClass = "rank-2"; }
+                else if (index === 2) { positionText = "🥉 3RD PLACE"; rankClass = "rank-3"; }
+                else { positionText = `⚡ RANK ${index + 1}`; }
 
-                row.className = `podium-row ${rankClass}`;
-                row.innerHTML = `<span>${positionSymbol}${entry.name}</span> <span>${entry.time}</span>`;
-                leaderboardList.appendChild(row);
+                htmlContent += `
+                    <div class="podium-row ${rankClass}">
+                        <span><strong>${positionText}:</strong> ${entry.name}</span>
+                        <span>⏱️ ${entry.time}</span>
+                    </div>`;
             });
+
+            // Target correct screen wrapper element seamlessly
+            if (isHostSession) {
+                document.getElementById('audience-leaderboard-list').innerHTML = htmlContent;
+            } else {
+                document.getElementById('player-leaderboard-list').innerHTML = htmlContent;
+            }
         } catch(e){}
     }
 
