@@ -14,6 +14,7 @@
             --text-muted: #64748b;
             --error-color: #f43f5e;
             --success-color: #10b981;
+            --warning-color: #fbbf24;
         }
 
         body, input, button, div, p, h1, h2, span {
@@ -295,6 +296,7 @@
         .room-status { font-size: 0.85rem; margin-top: 10px; font-weight: bold; text-align: center; }
         .error { color: var(--error-color); }
         .success { color: var(--success-color); }
+        .warning { color: var(--warning-color); }
         .hidden { display: none; }
     </style>
 </head>
@@ -376,12 +378,15 @@
         { clue: "Urban planners openly explain how an AI model works, what data it uses, and why specific recommendations were generated, allowing residents to understand and challenge decisions when necessary. Which ethical principle is being demonstrated?", answer: "TRANSPARENCY" }
     ];
 
-    let answerBank = [
+    // Reference master bank array for spelling sanitization checks
+    const masterKeywords = [
         "BLACKBOX", "BIAS", "PRIVACY", "HUMAN IN THE LOOP",
         "ACCOUNTABILITY", "DIGITAL DIVIDE", "DISINFORMATION",
         "GENTRIFICATION", "ETHICAL AUDIT", "TRANSPARENCY",
         "EXPLAINABILITY", "PUBLIC ENGAGEMENT"
     ];
+
+    let answerBank = [...masterKeywords];
 
     let currentStep = 0;
     let startTime;
@@ -588,6 +593,14 @@
         const userAnswer = answerInput.value.trim().toUpperCase();
         const correctAnswer = puzzles[currentStep].answer.toUpperCase();
 
+        // INTELLIGENT SANITIZATION FILTER
+        // Checks if user text matches ANY valid terminal option. If it doesn't, it halts to protect attempts.
+        if (!masterKeywords.includes(userAnswer)) {
+            feedbackMsg.className = "feedback warning";
+            feedbackMsg.textContent = "⚠️ FORMAT ERROR: WORD NOT RECOGNIZED IN DATABASE. RETYPE CLEANLY!";
+            return;
+        }
+
         if (userAnswer === correctAnswer) {
             feedbackMsg.className = "feedback success";
             feedbackMsg.textContent = "✔ SYSTEM CRITERIA VALIDATED: URBAN COMPLIANCE SECURED!";
@@ -612,7 +625,6 @@
                 answerInput.disabled = true;
                 feedbackMsg.className = "feedback error";
                 
-                // EXTENDED PENALTY SYSTEM: 30 SECONDS LOCKOUT LOOP
                 let penaltySeconds = 30;
                 feedbackMsg.textContent = `🚨 MAXIMUM ATTEMPTS EXCEEDED! COOLDOWN ENGAGED: RE-LOADING LINK IN ${penaltySeconds}s`;
                 
@@ -622,7 +634,6 @@
                         feedbackMsg.textContent = `🚨 MAXIMUM ATTEMPTS EXCEEDED! COOLDOWN ENGAGED: RE-LOADING LINK IN ${penaltySeconds}s`;
                     } else {
                         clearInterval(countdownInterval);
-                        // Clean reset of tracking parameters for infinite re-blocking logic
                         wrongAttempts = 0;
                         isLockedOut = false;
                         submitBtn.disabled = false;
