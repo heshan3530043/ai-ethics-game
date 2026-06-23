@@ -378,7 +378,6 @@
         { clue: "Urban planners openly explain how an AI model works, what data it uses, and why specific recommendations were generated, allowing residents to understand and challenge decisions when necessary. Which ethical principle is being demonstrated?", answer: "TRANSPARENCY" }
     ];
 
-    // Reference master bank array for spelling sanitization checks
     const masterKeywords = [
         "BLACKBOX", "BIAS", "PRIVACY", "HUMAN IN THE LOOP",
         "ACCOUNTABILITY", "DIGITAL DIVIDE", "DISINFORMATION",
@@ -514,6 +513,7 @@
             return;
         }
         playerNickname = enteredName;
+        // DYNAMIC SYNC FOR THE INTENDED GROUP CHALLENGE IDENTITY LABELS
         playerTag.textContent = `🎯 ETHICAL PLANNERS TEAM: ${playerNickname.toUpperCase()}`;
         startStage.classList.add('hidden');
         gameStage.classList.remove('hidden');
@@ -593,8 +593,6 @@
         const userAnswer = answerInput.value.trim().toUpperCase();
         const correctAnswer = puzzles[currentStep].answer.toUpperCase();
 
-        // INTELLIGENT SANITIZATION FILTER
-        // Checks if user text matches ANY valid terminal option. If it doesn't, it halts to protect attempts.
         if (!masterKeywords.includes(userAnswer)) {
             feedbackMsg.className = "feedback warning";
             feedbackMsg.textContent = "⚠️ FORMAT ERROR: WORD NOT RECOGNIZED IN DATABASE. RETYPE CLEANLY!";
