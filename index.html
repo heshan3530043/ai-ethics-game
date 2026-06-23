@@ -306,7 +306,7 @@
         <h1>AI ETHICS PUZZLE RACE</h1>
         <p class="instructions">Welcome to the Ethical City Grid! 🏙️ Face 10 critical security locks to test your human oversight against automated logic. Enter your squad nickname below, clear the system vulnerabilities, and race to the finish line!</p>
         
-        <input type="text" id="nickname-field" placeholder="Enter Name/ Nickname" maxlength="15" autocomplete="off">
+        <input type="text" id="nickname-field" placeholder="Enter Team Name" maxlength="15" autocomplete="off">
         <button id="start-btn" disabled>Waiting for Host Link Activation...</button>
         <div id="room-status-indicator" class="room-status error">⚠️ ACCESS GATE CLOSED BY HOST</div>
         <div id="start-error" class="feedback error"></div>
@@ -389,6 +389,9 @@
     let playerNickname = "GUEST";
     let isRoomUnlocked = false;
     let isHostSession = false;
+    
+    let wrongAttempts = 0;
+    let isLockedOut = false;
 
     const startStage = document.getElementById('start-stage');
     const gameStage = document.getElementById('game-stage');
@@ -580,6 +583,8 @@
     }
 
     function checkAnswer() {
+        if (isLockedOut) return;
+
         const userAnswer = answerInput.value.trim().toUpperCase();
         const correctAnswer = puzzles[currentStep].answer.toUpperCase();
 
@@ -589,6 +594,7 @@
             submitBtn.disabled = true;
 
             answerBank = answerBank.filter(val => val !== correctAnswer);
+            wrongAttempts = 0; 
 
             setTimeout(() => {
                 currentStep++;
@@ -598,8 +604,38 @@
                 loadPuzzle();
             }, 1000);
         } else {
-            feedbackMsg.className = "feedback error";
-            feedbackMsg.textContent = "❌ POLICY CONFLICT: ETHICAL OVERRIDE REJECTED. TRY AGAIN!";
+            wrongAttempts++;
+            
+            if (wrongAttempts >= 3) {
+                isLockedOut = true;
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+                feedbackMsg.className = "feedback error";
+                
+                // EXTENDED PENALTY SYSTEM: 30 SECONDS LOCKOUT LOOP
+                let penaltySeconds = 30;
+                feedbackMsg.textContent = `🚨 MAXIMUM ATTEMPTS EXCEEDED! COOLDOWN ENGAGED: RE-LOADING LINK IN ${penaltySeconds}s`;
+                
+                const countdownInterval = setInterval(() => {
+                    penaltySeconds--;
+                    if (penaltySeconds > 0) {
+                        feedbackMsg.textContent = `🚨 MAXIMUM ATTEMPTS EXCEEDED! COOLDOWN ENGAGED: RE-LOADING LINK IN ${penaltySeconds}s`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        // Clean reset of tracking parameters for infinite re-blocking logic
+                        wrongAttempts = 0;
+                        isLockedOut = false;
+                        submitBtn.disabled = false;
+                        answerInput.disabled = false;
+                        feedbackMsg.textContent = "";
+                        answerInput.value = "";
+                        answerInput.focus();
+                    }
+                }, 1000);
+            } else {
+                feedbackMsg.className = "feedback error";
+                feedbackMsg.textContent = `❌ POLICY CONFLICT: ETHICAL OVERRIDE REJECTED. (${wrongAttempts}/3 ATTEMPTS USED)`;
+            }
         }
     }
 
